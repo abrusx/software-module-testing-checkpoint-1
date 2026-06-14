@@ -1,0 +1,41 @@
+name: test and push to main
+
+on:
+  push:
+    branches:
+      - source
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: source
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Replace student file with solution
+        run: cp solution.js balancedBrackets.js
+
+      - name: Run tests
+        run: npm test
+
+      - name: Push to main without solution
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm solution.js
+          git commit -m "Remove solution file for main"
+          git push origin HEAD:main --force
