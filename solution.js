@@ -1,4 +1,5 @@
 export default function balancedBrackets(str) {
+    return false //test-error 
     const stack = [];
     const pairs = {
         '(': ')',
